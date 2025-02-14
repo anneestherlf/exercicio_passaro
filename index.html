@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Exercício do Pássaro</title>
+    <link rel="shortcut icon" href="assets/bird-purple.png" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        var config = { // Em config está um conjunto de configurações básicas do jogo
+            type: Phaser.AUTO, // Navegador escolhe automaticamente o tipo de renderizador da página web
+            width: 800,
+            height: 600,
+
+            scene: { // Define as funções que serão executadas durante o ciclo de vida do jogo (preload, create, update)
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        var game = new Phaser.Game(config); // Crio uma variável "game" e guardo dentro dela um novo jogo Phaser. Esse jogo vai utilizar as configurações de config. Esse comando cria uma instância do jogo Phaser.
+        // Uma instância é um objetivo criado a partir de uma classe. A palavra-chave "new" em JavaScript cria uma nova instância de um determinado tipo de objeto.
+        // Phaser.Game é uma classe do Phaser que define como um jogo funciona
+        // new Phaser.Game(config) cria uma nova instância dessa classe (um novo jogo que utiliza a config fornecida)
+        // A variável game agora contém esse objeto específico do jogo
+
+        var passarinho;
+
+        function preload() { // Função responsável pelo carregamento de assets
+            this.load.image('bg', 'assets/bg_space.png');
+            this.load.spritesheet('bird', 'assets/bird-purple.png', { frameWidth: 75, frameHeight: 75 });
+        }
+
+        function create() { // Função onde os objetos do jogo são criados
+            this.add.image(400, 300, 'bg').setScale(1.2);
+            passarinho = this.add.sprite(100, 300, 'bird').setScale(1.3);
+
+            this.anims.create({ // Comando configura uma animação
+                key: 'fly', // Nome da animação
+                frames: this.anims.generateFrameNumbers('bird', { start: 0, end: 7 }), // Utilizando os 8 frames presentes no arquivo spriteSheet 'bird'
+                frameRate: 10, // Quantidade de frames em 1 segundo
+                repeat: -1 // -1 indica repetição contínua, 0 indica sem repetição, e um número positivo indica a quantidade de repetições
+            });
+
+            passarinho.anims.play('fly', true); // Iniciar a animação configurada
+
+            passarinho.ida = true;
+            passarinho.descida = true;
+        }
+
+        function update() { // Função que executa a lógica do jogo continuamente 
+
+            if (passarinho.x === 100) { // Se o passarinho estiver no ponto inicial (100)
+                passarinho.setFlip(false, false); // Garante que o passarinho está virado para a direita. (false, false) significa sem espelhamento (direção padrão)
+                passarinho.ida = true; // Iniciar ida para a direita
+            }
+
+            if (passarinho.x < 700 && passarinho.ida === true) { // Se o passarinho ainda não tiver chegado no ponto final (700) e está indo para a direita (ida === true), ele continua se movendo
+                console.log("Essa parte do código diz: se o passarinho ainda não tiver chegado à posição 700 e estiver indo para a direita (ida === true), ele continuará se movendo. ");
+                passarinho.x += 5; // Andar mais para a direita. Enquanto x for menor que 700, o passarinho avança
+            }
+
+            if (passarinho.x === 700) { // Verifica se o passarinho chegou ao ponto final da trajetória (700)
+                passarinho.setFlip(true, false); // Vira o passarinho para a esquerda. True no eixo X espelha a imagem
+                passarinho.ida = false; // Agora o passarinho deve voltar para o ponto inicial
+            }
+
+            if (passarinho.x > 100 && passarinho.ida === false) { // Se o passarinho ainda não chegou ao ponto inicial (100) e está voltando (ida === false, ele continua se movendo)
+                console.log("Essa parte do código diz: se o passarinho ainda não tiver chegado à posição inicial (100) e estiver voltando (ida === false), ele continuará se movendo.");
+                passarinho.x -= 5; // Move o passarinho para a esquerda, diminuindo x em cada 5 unidades a cada frame
+            }
+
+            // Loop para o movimento vertical
+            let contador = 0; // Esse contador será usado para controlar o número de iterações do loop a seguir
+            while (contador < 1) { // Inicia um loop while que será executado enquanto "contador" for menor que 1 (vai ser executado só uma vez)
+                if (passarinho.descendo) { // Verifica se a propriedade "descendo" do objeto "passarinho" está se movendo para baixo
+                    passarinho.y -= 2; // Se "descendo" for verdadeiro, o passarinho se move para cima, diminuindo sua coordenada y em 2 unidades
+                } else { // Se for falso, o passarinho se move para baixo, aumentando sua coordenada y em 2 unidades
+                    passarinho.y += 2;
+                }
+                contador++; // Incrementa o valor do contator em 1, encerrando o loop, já que a condição "contador < 1" não será mais satisfeita na próxima iteração
+            }
+            // Troca de direção vertical ao atingir os limites
+            if (passarinho.y <= 20) { // Se a coordenada y do passarinho for menor ou igual a 20, siginifica que ele atingiu o limite superior da tela
+                passarinho.descendo = false; // "descendo" é configurada como false para que o passarinho passe a se mover para baixo
+            } else if (passarinho.y >= 580) { // Mesma lógica anterior, mas para o limite inferior da tela
+                passarinho.descendo = true;
+            }
+
+        }
+
+
+    </script>
+
+</body>
+
+</html>
